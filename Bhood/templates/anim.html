@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="body" onload="some()">
+<div id="div" style="margin-top: 400px; margin-left: 750px; font-size: 100px; color: white"></div>
+<script>
+    var body = document.getElementById('body');
+    var div = document.getElementById('div');
+    var c = 0;
+    var str = "Я пидорас";
+    setTimeout(cback, 2500);
+    var int = setInterval(some, 100);
+    function some() {
+        body.style.backgroundColor = 'black';
+        div.innerHTML += str[c];
+        c++;
+        if (c == str.length)
+            clearInterval(int);
+    }
+    function cback() {
+        body.style.backgroundColor = 'white';
+    }
+
+</script>
+</body>
+</html>

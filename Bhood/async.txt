@@ -1,0 +1,6 @@
+Для начала установим следующие библиотеки:
+django-cleanup
+django-allauth
+django-htmx
+
+Затем обновим pip

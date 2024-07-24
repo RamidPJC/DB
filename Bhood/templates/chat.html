@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #chat-container {
+            width: 600px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        #chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+        .message {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .message-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .message-content {
+            margin-left: 10px;
+        }
+        #chat-form {
+            display: flex;
+            padding: 20px;
+        }
+        #chat-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #chat-form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5cb85c;
+            color: #fff;
+            cursor: pointer;
+        }
+        #chat-form button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-messages">
+            {% for i in message %}
+                <div class="message">
+                    <div class="message-author">{{ i.author }}</div>
+                    <div class="message-content">{{ i.message }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        <form id="chat-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" name="message" placeholder="Введите ваше сообщение">
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    <script>
+        const chatroom_name = 'db';
+        const wssock = new WebSocket('ws://' + window.location.host + '/ws/chat/' + chatroom_name);
+
+        wssock.onopen = function (event) {
+            console.log('Connected to WebSocket');
+        };
+
+        wssock.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            const message = data.message;
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += message;
+        };
+
+        const chatForm = document.getElementById('chat-form');
+        chatForm.onsubmit = function (event) {
+            event.preventDefault();
+            const messageInput = chatForm.querySelector('input[name="message"]');
+            const message = messageInput.value;
+            wssock.send(JSON.stringify({
+                'message': message
+            }));
+            messageInput.value = '';
+        };
+    </script>
+</body>
+</html>

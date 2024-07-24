@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>We are Gods of the Fucking New World | Посты категории: {{ cat.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        #div {
+            background-color: aqua;
+            height: 50px;
+            border: groove;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        #div h3 {
+            font-family: cursive;
+            margin: 0;
+        }
+        #theme {
+            background-color: dodgerblue;
+            color: aqua;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            position: relative;
+            margin-left: 20px;
+        }
+        .nav-container {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links a {
+            margin-left: 8px;
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            list-style: none;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: black;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .pagination .active a {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+        .search-bar input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-bar button {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            margin: 70px 200px 20px 20px;
+            padding: 20px;
+            flex-grow: 1;
+        }
+        .post {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        .post img {
+            display: block;
+            margin-top: 10px;
+            border: solid 2px aqua;
+            max-width: 100%;
+        }
+        #sidebar {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+        #sidebar a {
+            display: block;
+            padding: 10px 0;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s, color 0.3s;
+
+        #sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        #sidebar hr {
+            margin: 5px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body id="body">
+    <nav id="div">
+        <h3>We are Gods of the Fucking New World | Посты категории "{{ cat.title }}"</h3>
+        <div class="nav-container">
+            <form method="get" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="search-bar">
+                    <input type="text" id="search-input" name="_search" placeholder="Найти пост..." value="{{ search_value }}">
+                    <button type="submit">Поиск</button>
+                </div>
+            </form>
+            <button id="theme" onclick="change_back(this)">Темная тема</button>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'chat_view' %}">Чат</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'predl' %}">Предложка</a>
+                        <a href="{% url 'add-post-admin' %}">Добавить пост</a>
+                    {% else %}
+                        <a href="{% url 'add-post' %}">Предложить пост</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}">Выйти из профиля</a>
+                    <a href="{% url 'get_profile' user.username %}">Просмотреть профиль</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Войти в профиль</a>
+                    <a href="{% url 'register' %}">Зарегистрироваться</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="content">
+        {% for i in page_obj %}
+            <div class="post">
+                {% if forloop.first %}
+                    {% include '_side.html' %}
+                {% endif %}
+                <h2>{{ i.title }}</h2>
+                <span>{{ i.cont }}</span>
+                <br><br>
+                {% if i.photo %}
+                    <img src="{{ i.photo.url }}" alt="Post image">
+                {% endif %}
+                <br>
+                <a href="{% url 'post' i.pk %}">Read more...</a>
+                <br>
+                <span>Категории: {{ i.category_names }}</span>
+            </div>
+        {% endfor %}
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <script>
+        var body = document.getElementById('body');
+        var spans = document.getElementsByTagName('span');
+        var h2 = document.getElementsByTagName('h2');
+        var img = document.getElementsByTagName('img');
+        var a = document.getElementsByTagName('a');
+        function change_back(el) {
+            if (el.innerHTML == "Темная тема") {
+                el.innerHTML = "Светлая тема";
+                body.style.backgroundColor = "#212121";
+                document.getElementById('div').style.backgroundColor = "blueviolet";
+                el.style.color = 'blueviolet';
+            } else {
+                el.innerHTML = "Темная тема";
+                body.style.backgroundColor = "white";
+                document.getElementById('div').style.backgroundColor = "aqua";
+                el.style.color = 'aqua';
+            }
+        }
+    </script>
+</body>
+</html>

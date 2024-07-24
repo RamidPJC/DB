@@ -1,0 +1,7 @@
+                for j in rat:
+                    if rate.person != j.person:
+                        RatePost.objects.filter(post=post).update(rate=models.F('rate')+rate_value, rate_count=models.F('rate_count')+1)
+                    else:
+                        rat_by_person = RatePost.objects.filter(post=post, person=rate.person)
+                        rat_by_person.update(rate=rate.rate)
+                if rat.count() == 0:

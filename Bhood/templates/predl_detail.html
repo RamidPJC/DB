@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>We are Gods of the Fucking New World | "{{ post.title }}"</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        #div {
+            background-color: aqua;
+            height: 50px;
+            border: groove;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        #div h3 {
+            font-family: cursive;
+            margin: 0;
+        }
+        #theme {
+            background-color: dodgerblue;
+            color: aqua;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-left: -110px;
+            margin-top: 3px;
+            position: absolute;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links a {
+            margin-left: 8px;
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .post-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+        .post-container h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .post-container img {
+            width: 100%;
+            border: solid;
+            border-color: aqua;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .comments-section {
+            margin-top: 40px;
+        }
+        .comments-section form {
+            display: flex;
+            flex-direction: column;
+        }
+        .comments-section form input,
+        .comments-section form textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .comments-section form button {
+            align-self: flex-start;
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .comments {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .comment {
+            margin-bottom: 20px;
+        }
+        .comment .author {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body id="body">
+    <nav id="div">
+        <h3>We are Gods of the Fucking New World | "{{ post.title }}"</h3>
+        <div>
+            <button id="theme" onclick="change_back(this)">Темная тема</button>
+            {% if user.is_authenticated %}
+            <div class="nav-links">
+                <a href="{% url 'chat_view' %}">Чат</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'add-post-admin' %}">Добавить пост</a>
+                {% else %}
+                    <a href="{% url 'add-post' %}">Предложить пост</a>
+                {% endif %}
+                <a href="{% url 'logout' %}">Выйти из профиля</a>
+                <a href="{% url 'get_profile' user.username %}">Просмотреть профиль</a>
+            </div>
+            {% else %}
+            <div class="nav-links">
+                <a href="{% url 'login' %}">Войти в профиль</a>
+                <a href="{% url 'register' %}">Зарегистрироваться</a>
+            </div>
+            {% endif %}
+</div>
+    </nav>
+    <div class="post-container">
+        <h2>{{ post.title }}</h2>
+        <span>{{ post.cont }}</span>
+        <br><br>
+        {% if post.photo %}
+        <img src="{{ post.photo.url }}" alt="Post Image">
+        {% endif %}
+        <div>
+            <span>Категории: {{ post.category_names }}</span>
+            <br>
+            <a href="{% url 'home' %}">Вернуться на главную</a>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="{% url 'update' post.pk %}">
+                <button style="background-color: dodgerblue; margin-right: 15px; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Редактировать</button>
+            </a>
+            <form method="post" action="{% url 'predl_detail' post.pk %}" style="display: inline-block;">
+                {% csrf_token %}
+                <button type="submit" style="background-color: dodgerblue; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Опубликовать</button>
+            </form>
+            <form method="post" action="{% url 'predl_detail' post.pk %}" style="display: inline-block; margin-left: 20px;">
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="delete">
+                <button type="submit" style="background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Отклонить</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        var body = document.getElementById('body');
+        var spans = document.getElementsByTagName('span');
+        var h2 = document.getElementsByTagName('h2');
+        var img = document.getElementsByTagName('img');
+        var a = document.getElementsByTagName('a');
+        function change_back(el) {
+            if (el.innerHTML == "Темная тема") {
+                el.innerHTML = "Светлая тема";
+                body.style.backgroundColor = "#212121";
+                document.getElementById('div').style.backgroundColor = "blueviolet";
+                el.style.color = 'blueviolet';
+            } else {
+                el.innerHTML = "Темная тема";
+                body.style.backgroundColor = "white";
+                document.getElementById('div').style.backgroundColor = "aqua";
+                el.style.color = 'aqua';
+            }
+        }
+    </script>
+</body>
+</html>

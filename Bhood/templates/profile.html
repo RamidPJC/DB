@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр профиля {{ prof.name.username }}</title>
+    <style>
+        .container {
+            width: 35%;
+            height: 400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 200px;
+        }
+        .profile-pic {
+            text-align: center;
+            margin-bottom: -80px;
+            position: relative;
+        }
+        .profile-pic img {
+            width: 150px;
+            height: 150px;
+            border-radius: 15px;
+            border: solid;
+        }
+        .edit-avatar-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .profile-pic:hover .edit-avatar-btn {
+            display: block;
+        }
+        .profile-info {
+            text-align: center;
+            margin-top: 100px;
+            font-family: Impact;
+        }
+        .profile-status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 25px;
+            font-family: Calibri;
+        }
+        .edit-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .edit-button button {
+            background-color: dodgerblue;
+            border-radius: 5px;
+            width: 150px;
+            height: 30px;
+            border-width: 1px;
+            font-family: Calibri;
+            font-size: 20px;
+            color: aliceblue;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="background-color: lavender">
+    <div class="container">
+        {% if prof.profile_pic %}
+        <div class="profile-pic">
+            <img src="{{ prof.profile_pic.url }}" alt="Profile Picture">
+            {% if now_user.username == prof.name.username %}
+            <button class="edit-avatar-btn" onclick="document.getElementById('id_profile_pic').click()">Изменить фото</button>
+            {% endif %}
+        </div>
+        {% endif %}
+        <div class="profile-info" style="color: {% if prof.name.is_staff %}blueviolet{% else %}mediumvioletred{% endif %}; font-size: 50px;">
+            {{ prof.name }}
+        </div>
+        <div class="profile-status">
+            Статус: {% if prof.name.is_staff %}Администратор{% else %}Пользователь{% endif %}
+        </div>
+        {% if now_user.username == prof.name.username %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="id_profile_pic" name="profile_pic" style="display: none;" onchange="this.form.submit()">
+            <div class="edit-button">
+            </div>
+        </form>
+        {% endif %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('id_profile_pic').addEventListener('change', function() {
+                this.form.submit();
+            });
+        });
+    </script>
+</body>
+</html>

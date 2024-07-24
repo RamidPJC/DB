@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>We are Gods of the Fucking New World | "{{ post.title }}"</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        #navbar {
+            background-color: aqua;
+            height: 50px;
+            border: groove;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        #navbar h3 {
+            font-family: cursive;
+            margin: 0;
+        }
+        #theme {
+            background-color: dodgerblue;
+            color: aqua;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        .nav-links a {
+            margin-left: 8px;
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+        }
+        .search-bar input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-bar button {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+        .search-bar button:hover {
+            background-color: #0056b3;
+        }
+        .post-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .post-container h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .post-container img {
+            width: 100%;
+            border: solid;
+            border-color: aqua;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .comments-section {
+            margin-top: 40px;
+        }
+        .comments-section form {
+            display: flex;
+            flex-direction: column;
+        }
+        .comments-section form input,
+        .comments-section form textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .comments-section form button {
+            align-self: flex-start;
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .comments {
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .comment {
+            margin-bottom: 20px;
+        }
+        .comment .author {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body id="body">
+    <nav id="navbar">
+        <h3>We are Gods of the Fucking New World | "{{ post.title }}"</h3>
+        <div style="display: flex; align-items: center;">
+            <button id="theme" onclick="change_back(this)">Темная тема</button>
+        
+            {% if user.is_authenticated %}
+            <div class="nav-links">
+                <a href="{% url 'chat_view' %}">Чат</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'add-post-admin' %}">Добавить пост</a>
+                {% else %}
+                    <a href="{% url 'add-post' %}">Предложить пост</a>
+                {% endif %}
+                <a href="{% url 'logout' %}">Выйти из профиля</a>
+                <a href="{% url 'get_profile' user.username %}">Просмотреть профиль</a>
+            </div>
+            {% else %}
+            <div class="nav-links">
+                <a href="{% url 'login' %}">Войти в профиль</a>
+                <a href="{% url 'register' %}">Зарегистрироваться</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="post-container">
+        <h2>{{ post.title }}</h2>
+        <span>{{ post.cont }}</span>
+        <br><br>
+        {% if post.photo %}
+        <img src="{{ post.photo.url }}" alt="Post Image">
+        {% endif %}
+        <div>
+            <span>Категории: {{ post.category_names }}</span>
+            <br>
+            Оценка: {{ middle_rate }}
+            <br>
+            <a href="{% url 'home' %}">Вернуться на главную</a>
+            <br>
+            Просмотры: {{ post.views }}
+        </div>
+        {% if user.is_authenticated %}
+            <div>
+                <form method="post" action="{% url 'post' post.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form2.as_p }}
+                    <button type="submit" name="_rate">Оценить</button>
+                </form>
+            </div>
+            <div class="comments-section">
+                <h3>Оставить комментарий</h3>
+                <form enctype="multipart/form-data" method="post" action="{% url 'post' post.pk %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" name="_comm">Отправить</button>
+                </form>
+            </div>
+        {% endif %}
+        <div class="comments">
+            <h3>Комментарии</h3>
+            {% for i in comments %}
+            <div class="comment">
+                <div class="author">{{ i.author }}</div>
+                <div class="text">{{ i.comment }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        function change_back(el) {
+            var body = document.getElementById('body');
+            if (el.innerHTML == "Темная тема") {
+                el.innerHTML = "Светлая тема";
+                body.style.backgroundColor = "#212121";
+                document.getElementById('navbar').style.backgroundColor = "blueviolet";
+                el.style.color = 'blueviolet';
+            } else {
+                el.innerHTML = "Темная тема";
+                body.style.backgroundColor = "white";
+                document.getElementById('navbar').style.backgroundColor = "aqua";
+                el.style.color = 'aqua';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+    <style>
+        #sidebar {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 190px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+        #sidebar a {
+            display: block;
+            padding: 10px 0;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        #sidebar hr {
+            margin: 5px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    {% for i in cats %}
+        <a href="{% url 'cat' i.pk %}">{{ i.title }}</a>
+        {% if not forloop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+</div>
+</body>
+</html>
