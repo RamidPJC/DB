@@ -81,7 +81,8 @@ ASGI_APPLICATION = 'DB.asgi.application'
 
 DATABASES = {
     'default': {
-        'default': dj_database_url.config(default=os.environ.get('postgres://default:cpP7R6GkHMyb@ep-summer-violet-a4i364tq-pooler.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require'))
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
